@@ -1,0 +1,162 @@
+@use '@/styles/tokens' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: 0 auto;
+  max-width: 620px;
+  color: $color-muted;
+  line-height: 1.5;
+}
+
+.searchRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchInput {
+  min-height: 52px;
+  border: 1px solid $color-border;
+  padding: 0 14px;
+  font-size: 16px;
+}
+
+.findButton {
+  min-height: 52px;
+  border: none;
+  background: $color-brand;
+  color: $color-surface;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.total {
+  color: $color-brand;
+  font-size: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+.state {
+  color: $color-muted;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pageArrow,
+.pageButton {
+  min-width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: $color-text;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.pageButton {
+  font-size: 24px;
+}
+
+.pageButtonActive {
+  background: $color-brand;
+  color: $color-surface;
+}
+
+.pageDots {
+  min-width: 24px;
+  text-align: center;
+  font-size: 22px;
+}
+
+.pageArrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@include mq($bp-tablet) {
+  .page {
+    gap: 36px;
+  }
+
+  .searchRow {
+    flex-direction: row;
+  }
+
+  .searchInput {
+    flex: 1;
+  }
+
+  .findButton {
+    width: 170px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+@include mq($bp-laptop) {
+  .title {
+    font-size: 52px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+  }
+}
+
+@include mq($bp-desktop) {
+  .page {
+    gap: 44px;
+  }
+
+  .title {
+    font-size: 64px;
+  }
+
+  .grid {
+    gap: 32px;
+  }
+}

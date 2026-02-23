@@ -1,0 +1,12 @@
+@use './tokens' as *;
+
+@mixin container {
+  width: min(100%, $max-content-width);
+  margin: 0 auto;
+}
+
+@mixin mq($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
