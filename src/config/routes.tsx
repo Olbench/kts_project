@@ -1,10 +1,10 @@
 import { Navigate, type RouteObject } from 'react-router-dom'
 
 import App from '@/App'
-import ErrorPage from '@/App/pages/ErrorPage'
-import PlaceholderPage from '@/App/pages/PlaceholderPage'
-import ProductPage from '@/App/pages/ProductPage'
-import Products from '@/App/pages/Products'
+import ErrorPage from '@/pages/ErrorPage'
+import PlaceholderPage from '@/pages/PlaceholderPage'
+import ProductPage from '@/pages/ProductPage'
+import Products from '@/pages/Products'
 
 export const routesConfig: RouteObject[] = [
   {

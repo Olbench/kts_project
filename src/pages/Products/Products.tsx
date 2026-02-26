@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { getProducts } from '@/api/products'
-import ProductItem from '@/App/pages/Products/components/ProductItem'
+import ProductItem from '@/pages/Products/components/ProductItem'
 import type { ProductEntity } from '@/types/product'
 
 import styles from './Products.module.scss'
