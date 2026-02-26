@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { getProducts } from '@/api/products'
 import ProductItem from '@/pages/Products/components/ProductItem'
+import ProductsPagination from '@/pages/Products/components/ProductsPagination'
 import type { ProductEntity } from '@/types/product'
 
 import styles from './Products.module.scss'
@@ -118,40 +119,14 @@ function Products() {
             ))}
           </div>
           {filteredProducts.length > PAGE_SIZE && (
-            <nav aria-label="Products pagination" className={styles.pagination}>
-              <button
-                className={styles.pageArrow}
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                type="button"
-              >
-                &lt;
-              </button>
-              {paginationItems.map((item) =>
-                typeof item === 'number' ? (
-                  <button
-                    className={`${styles.pageButton} ${item === currentPage ? styles.pageButtonActive : ''}`}
-                    key={item}
-                    onClick={() => setCurrentPage(item)}
-                    type="button"
-                  >
-                    {item}
-                  </button>
-                ) : (
-                  <span className={styles.pageDots} key={item}>
-                    ...
-                  </span>
-                ),
-              )}
-              <button
-                className={styles.pageArrow}
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                type="button"
-              >
-                &gt;
-              </button>
-            </nav>
+            <ProductsPagination
+              currentPage={currentPage}
+              onNext={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              onPageChange={(page) => setCurrentPage(page)}
+              onPrevious={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              paginationItems={paginationItems}
+              totalPages={totalPages}
+            />
           )}
         </>
       )}

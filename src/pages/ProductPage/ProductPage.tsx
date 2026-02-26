@@ -38,7 +38,7 @@ const ProductPage = () => {
       }
     }
 
-    void fetchProduct()
+    fetchProduct()
   }, [documentId])
 
   if (isLoading) {
