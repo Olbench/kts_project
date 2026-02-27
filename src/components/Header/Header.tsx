@@ -6,7 +6,7 @@ import userIcon from '@/assets/icons/icon_user.svg'
 
 import styles from './Header.module.scss'
 
-const navClassName = ({ isActive }: { isActive: boolean }): string =>
+const getNavClassName = ({ isActive }: { isActive: boolean }): string =>
   `${styles.link} ${isActive ? styles.linkActive : ''}`
 
 const Header = () => {
@@ -19,13 +19,13 @@ const Header = () => {
         </Link>
 
         <nav className={styles.nav}>
-          <NavLink className={navClassName} to="/products">
+          <NavLink className={getNavClassName} to="/products">
             Products
           </NavLink>
-          <NavLink className={navClassName} to="/categories">
+          <NavLink className={getNavClassName} to="/categories">
             Categories
           </NavLink>
-          <NavLink className={navClassName} to="/about-us">
+          <NavLink className={getNavClassName} to="/about-us">
             About us
           </NavLink>
         </nav>

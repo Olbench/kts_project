@@ -5,15 +5,10 @@ import Text from '../Text';
 import Loader from '../Loader';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  /** Состояние загрузки */
   loading?: boolean;
-  disabled?: boolean;
-  /** Текст кнопки */
-  children: React.ReactNode;
-  onClick?: (e: React.MouseEvent) => void;
 };
 
-const Button: React.FC<ButtonProps> = ({
+const Button: React.FC<React.PropsWithChildren<ButtonProps>> = ({
   loading = false,
   disabled = false,
   children,
@@ -26,22 +21,12 @@ const Button: React.FC<ButtonProps> = ({
     'button-disabled': disabled,
   });
 
-  const buttonText = (
-    <Text tag="div" view="button">
-      {children}
-    </Text>
-  );
-
   return (
     <button onClick={onClick} className={buttonClass} disabled={loading || disabled} {...props}>
-      {loading ? (
-        <>
-          <Loader size="s" color="#FFFFFF" />
-          {buttonText}
-        </>
-      ) : (
-        buttonText
-      )}
+      {loading && <Loader size="s" color="#FFFFFF" />}
+      <Text tag="div" view="button">
+        {children}
+      </Text>
     </button>
   );
 };
