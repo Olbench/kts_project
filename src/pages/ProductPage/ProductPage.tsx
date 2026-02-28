@@ -6,19 +6,20 @@ import type { ProductEntity } from '@/types/product'
 
 import styles from './ProductPage.module.scss'
 
+const NOT_FOUND_ERROR = 'Товар не найден'
+
 const ProductPage = () => {
   const { documentId } = useParams()
   const [product, setProduct] = useState<ProductEntity | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(() => (documentId ? true : false))
+  const [error, setError] = useState(() => (documentId ? '' : NOT_FOUND_ERROR))
 
   useEffect(() => {
+    if (!documentId) {
+      return
+    }
+
     const fetchProduct = async (): Promise<void> => {
-      if (!documentId) {
-        setError('Товар не найден')
-        setIsLoading(false)
-        return
-      }
 
       try {
         setIsLoading(true)
