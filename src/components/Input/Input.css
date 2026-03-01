@@ -1,0 +1,56 @@
+@import url('../variables.css');
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 5px 0;
+  font-size: 16px;
+  border: 1px solid white;
+}
+
+.input-wrapper.input-disabled {
+  background-color: #ffffff;
+  color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.input-wrapper:focus-within {
+  border: 1px solid #518581;
+}
+
+.input-element {
+  width: 100%;
+  padding-left: 8px;
+  height: 40px;
+  padding: 0 var(--spacing-m);
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--text-primary);
+  transition: background-color var(--transition-duration)
+    var(--transition-easing);
+  padding-right: calc(var(--spacing-m) + 20px);
+}
+
+.input-element::placeholder {
+  color: var(--text-secondary);
+}
+
+.input-element:disabled {
+  background-color: #ffffff;
+  color: rgba(175, 173, 181, 1);
+  opacity: 0.6;
+}
+
+.input-after-slot {
+  position: absolute;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999999;
+  pointer-events: none;
+}

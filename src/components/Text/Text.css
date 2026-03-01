@@ -1,0 +1,70 @@
+@import url('../variables.css');
+.text {
+  color: rgba(0, 0, 0, 1);
+  font-family: 'Roboto', sans-serif;
+  text-align: left;
+  font-weight: 400;
+}
+
+.text-title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 48px;
+}
+
+.text-button {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.text-p-20 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.text-p-18 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.text-p-16 {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.text-p-14 {
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.text-weight-normal {
+  font-weight: normal;
+}
+
+.text-weight-medium {
+  font-weight: 500;
+}
+
+.text-weight-bold {
+  font-weight: bold;
+}
+
+.text-color-primary {
+  color: var(--text-primary);
+}
+
+.text-color-secondary {
+  color: var(--text-secondary);
+}
+
+.text-color-accent {
+  color: var(--text-accent);
+}
+
+p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
