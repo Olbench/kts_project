@@ -1,0 +1,31 @@
+@import url('../variables.css');
+
+.button {
+  width: auto;
+  height: auto;
+  padding: var(--spacing-s) var(--spacing-l);
+  gap: var(--spacing-xxs);
+  min-height: 52px;
+  color: var(--button-primary-text);
+  border: none;
+  background-color: var(--button-primary-bg);
+}
+
+.button:not(.button-disabled):not(.button-loading):hover {
+  background-color: var(--brand-hover);
+}
+
+.button-disabled {
+  background-color: var(--button-primary-bg-disabled);
+}
+
+.button-disabled:hover {
+  background-color: var(--button-primary-bg-disabled);
+  cursor: not-allowed;
+}
+
+.button-loading {
+  display: flex;
+  align-items: center;
+  padding: 14px var(--spacing-l);
+}

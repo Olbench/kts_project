@@ -1,0 +1,141 @@
+@use '@/styles/tokens' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.2;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 0;
+}
+
+.emptyText {
+  color: $color-muted;
+  font-size: 18px;
+  margin: 0;
+}
+
+.shopLink {
+  color: $color-brand;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.item {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid $color-border;
+}
+
+.itemImageLink {
+  flex-shrink: 0;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  background: $color-image-fallback;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  color: $color-text;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemCategory {
+  color: $color-muted;
+  font-size: 13px;
+}
+
+.itemPrice {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.removeButton {
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px;
+  flex-shrink: 0;
+
+  &:hover {
+    color: #c0392b;
+  }
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid $color-border;
+  max-width: 360px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px solid $color-border;
+}
+
+.clearButton {
+  border: none;
+  background: $color-muted;
+  color: $color-surface;
+  min-height: 44px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@include mq($bp-tablet) {
+  .itemImage {
+    width: 100px;
+    height: 100px;
+  }
+}
