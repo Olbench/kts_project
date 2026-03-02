@@ -1,16 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
-import { getProducts } from '@/api/products'
+import type { Option } from '@/components/MultiDropdown/MultiDropdown'
+import MultiDropdown from '@/components/MultiDropdown/MultiDropdown'
 import ProductItem from '@/pages/Products/components/ProductItem'
+import ProductSkeleton from '@/pages/Products/components/ProductSkeleton'
 import ProductsPagination from '@/pages/Products/components/ProductsPagination'
-import type { ProductEntity } from '@/types/product'
+import CategoriesStore from '@/store/CategoriesStore'
+import ProductsStore from '@/store/ProductsStore'
+import { Meta } from '@/utils/meta'
+import { useLocalStore } from '@/utils/useLocalStore'
 
 import styles from './Products.module.scss'
 
-const EMPTY_TOTAL = 0
-const PAGE_SIZE = 9
-
 type PaginationItem = number | 'dots-left' | 'dots-right'
+
+const PAGE_SIZE = 9
 
 const getPaginationItems = (currentPage: number, totalPages: number): PaginationItem[] => {
   if (totalPages <= 6) {
@@ -28,55 +34,85 @@ const getPaginationItems = (currentPage: number, totalPages: number): Pagination
   return [1, 'dots-left', currentPage, 'dots-right', totalPages]
 }
 
-function Products() {
-  const [products, setProducts] = useState<ProductEntity[]>([])
-  const [total, setTotal] = useState<number>(EMPTY_TOTAL)
-  const [searchValue, setSearchValue] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+const Products = observer(() => {
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  useEffect(() => {
-    const fetchProducts = async (): Promise<void> => {
-      try {
-        setIsLoading(true)
-        setError('')
-        const result = await getProducts()
-        setProducts(result.products)
-        setTotal(result.total)
-      } catch {
-        setError('Не удалось получить товары')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    void fetchProducts()
-  }, [])
-
-  const filteredProducts = useMemo(
+  const productsStore = useLocalStore(
     () =>
-      products.filter((product) =>
-        product.title.toLowerCase().includes(searchValue.toLowerCase().trim()),
-      ),
-    [products, searchValue],
+      new ProductsStore({
+        search: searchParams.get('search') || undefined,
+        page: Number(searchParams.get('page')) || undefined,
+        categoryId: Number(searchParams.get('categoryId')) || undefined,
+        categoryTitle: searchParams.get('category') || undefined,
+      }),
   )
 
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE))
-  const visibleProducts = useMemo(() => {
-    const offset = (currentPage - 1) * PAGE_SIZE
-    return filteredProducts.slice(offset, offset + PAGE_SIZE)
-  }, [currentPage, filteredProducts])
-  const paginationItems = useMemo(
-    () => getPaginationItems(currentPage, totalPages),
-    [currentPage, totalPages],
-  )
+  const categoriesStore = useLocalStore(() => new CategoriesStore())
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages)
+    categoriesStore.fetchCategories()
+  }, [categoriesStore])
+
+  // Sync store state to URL query params
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    if (productsStore.search) {
+      params.set('search', productsStore.search)
     }
-  }, [currentPage, totalPages])
+    if (productsStore.selectedCategory) {
+      params.set('category', productsStore.selectedCategory.title)
+      params.set('categoryId', String(productsStore.selectedCategory.id))
+    }
+    if (productsStore.page > 1) {
+      params.set('page', String(productsStore.page))
+    }
+
+    setSearchParams(params, { replace: true })
+  }, [productsStore.search, productsStore.selectedCategory, productsStore.page, setSearchParams])
+
+  const categoryOptions: Option[] = useMemo(
+    () =>
+      categoriesStore.categories.map((cat) => ({
+        key: String(cat.id),
+        value: cat.title,
+      })),
+    [categoriesStore.categories],
+  )
+
+  const selectedCategoryOptions: Option[] = useMemo(() => {
+    if (!productsStore.selectedCategory) {
+      return []
+    }
+    return [
+      {
+        key: String(productsStore.selectedCategory.id),
+        value: productsStore.selectedCategory.title,
+      },
+    ]
+  }, [productsStore.selectedCategory])
+
+  const handleCategoryChange = (selected: Option[]) => {
+    if (selected.length === 0) {
+      productsStore.setSelectedCategory(null)
+      return
+    }
+    // Use last selected for single-category filter
+    const last = selected[selected.length - 1]
+    const category = categoriesStore.categories.find((c) => String(c.id) === last.key)
+    if (category) {
+      productsStore.setSelectedCategory(category)
+    }
+  }
+
+  const paginationItems = useMemo(
+    () => getPaginationItems(productsStore.page, productsStore.totalPages),
+    [productsStore.page, productsStore.totalPages],
+  )
+
+  const isLoading = productsStore.meta === Meta.loading
+  const isError = productsStore.meta === Meta.error
+  const isInitial = productsStore.meta === Meta.initial
 
   return (
     <section className={styles.page}>
@@ -91,47 +127,73 @@ function Products() {
       <div className={styles.searchRow}>
         <input
           className={styles.searchInput}
-          onChange={(event) => {
-            setSearchValue(event.target.value)
-            setCurrentPage(1)
-          }}
+          onChange={(event) => productsStore.setSearch(event.target.value)}
           placeholder="Search product"
           type="text"
-          value={searchValue}
+          value={productsStore.search}
         />
-        <button className={styles.findButton} type="button">
+        <button
+          className={styles.findButton}
+          onClick={() => productsStore.fetchProducts()}
+          type="button"
+        >
           Find now
         </button>
       </div>
 
-      <div className={styles.meta}>
-        <span>Total products</span>
-        <span className={styles.total}>{total}</span>
+      <div className={styles.filterRow}>
+        <MultiDropdown
+          disabled={categoriesStore.meta === Meta.loading}
+          getTitle={(selected) =>
+            selected.length > 0 ? selected.map((s) => s.value).join(', ') : 'Filter by category'
+          }
+          onChange={handleCategoryChange}
+          options={categoryOptions}
+          value={selectedCategoryOptions}
+        />
       </div>
 
-      {isLoading && <p className={styles.state}>Loading...</p>}
-      {error && <p className={styles.state}>{error}</p>}
-      {!isLoading && !error && (
+      <div className={styles.meta}>
+        <span>Total products</span>
+        <span className={styles.total}>{productsStore.totalProducts}</span>
+      </div>
+
+      {isError && <p className={styles.state}>Failed to load products</p>}
+
+      {(isLoading || isInitial) && (
+        <div className={styles.grid}>
+          {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+            <ProductSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !isError && !isInitial && (
         <>
-          <div className={styles.grid}>
-            {visibleProducts.map((product) => (
-              <ProductItem key={product.documentId} product={product} />
-            ))}
-          </div>
-          {filteredProducts.length > PAGE_SIZE && (
+          {productsStore.products.length === 0 ? (
+            <p className={styles.state}>No products found</p>
+          ) : (
+            <div className={styles.grid}>
+              {productsStore.products.map((product) => (
+                <ProductItem key={product.documentId} product={product} />
+              ))}
+            </div>
+          )}
+
+          {productsStore.totalPages > 1 && (
             <ProductsPagination
-              currentPage={currentPage}
-              onNext={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-              onPageChange={(page) => setCurrentPage(page)}
-              onPrevious={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              currentPage={productsStore.page}
+              onNext={() => productsStore.setPage(Math.min(productsStore.totalPages, productsStore.page + 1))}
+              onPageChange={(page) => productsStore.setPage(page)}
+              onPrevious={() => productsStore.setPage(Math.max(1, productsStore.page - 1))}
               paginationItems={paginationItems}
-              totalPages={totalPages}
+              totalPages={productsStore.totalPages}
             />
           )}
         </>
       )}
     </section>
   )
-}
+})
 
 export default Products

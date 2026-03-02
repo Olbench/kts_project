@@ -1,5 +1,7 @@
+import { observer } from 'mobx-react-lite'
 import { Link } from 'react-router-dom'
 
+import { useCartStore } from '@/store/CartStoreContext'
 import type { ProductEntity } from '@/types/product'
 
 import styles from './ProductItem.module.scss'
@@ -8,7 +10,18 @@ type ProductItemProps = {
   product: ProductEntity
 }
 
-const ProductItem = ({ product }: ProductItemProps) => {
+const ProductItem = observer(({ product }: ProductItemProps) => {
+  const cartStore = useCartStore()
+  const inCart = cartStore.isInCart(product.id)
+
+  const handleCartClick = () => {
+    if (inCart) {
+      cartStore.removeItemFromCart(product.id)
+    } else {
+      cartStore.addToCart(product)
+    }
+  }
+
   return (
     <article className={styles.card}>
       <Link aria-label={product.title} className={styles.imageLink} to={`/products/${product.documentId}`}>
@@ -26,13 +39,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
         <p className={styles.description}>{product.description}</p>
         <div className={styles.footer}>
           <span className={styles.price}>${product.price.toFixed(2)}</span>
-          <button className={styles.addButton} type="button">
-            Add to cart
+          <button
+            className={`${styles.addButton} ${inCart ? styles.addButtonInCart : ''}`}
+            onClick={handleCartClick}
+            type="button"
+          >
+            {inCart ? 'In cart' : 'Add to cart'}
           </button>
         </div>
       </div>
     </article>
   )
-}
+})
 
 export default ProductItem

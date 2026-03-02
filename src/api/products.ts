@@ -10,15 +10,6 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
 })
 
-const populateQuery = qs.stringify(
-  {
-    populate: ['images', 'productCategory'],
-  },
-  {
-    encodeValuesOnly: true,
-  },
-)
-
 const toObject = (value: unknown): Record<string, unknown> =>
   value !== null && typeof value === 'object' ? (value as Record<string, unknown>) : {}
 
@@ -27,6 +18,9 @@ const toStringValue = (value: unknown, fallback = ''): string =>
 
 const toNumberValue = (value: unknown, fallback = 0): number =>
   typeof value === 'number' ? value : fallback
+
+const toBooleanValue = (value: unknown, fallback = false): boolean =>
+  typeof value === 'boolean' ? value : fallback
 
 const normalizeImageUrl = (url: string): string => {
   if (!url) {
@@ -58,24 +52,33 @@ const pickImageUrl = (raw: Record<string, unknown>): string => {
   return ''
 }
 
-const pickCategory = (raw: Record<string, unknown>): string => {
+const pickCategory = (raw: Record<string, unknown>): { title: string; id: number } => {
   const category = toObject(raw.productCategory)
 
   if (Array.isArray(category)) {
     const first = toObject(category[0])
-    return toStringValue(first.title, 'Unknown category')
+    return {
+      title: toStringValue(first.title, 'Unknown category'),
+      id: toNumberValue(first.id),
+    }
   }
 
   if (category.data) {
     const relation = toObject(category.data)
     const attributes = toObject(relation.attributes)
-    return toStringValue(attributes.title, 'Unknown category')
+    return {
+      title: toStringValue(attributes.title || relation.title, 'Unknown category'),
+      id: toNumberValue(relation.id),
+    }
   }
 
-  return toStringValue(category.title, 'Unknown category')
+  return {
+    title: toStringValue(category.title, 'Unknown category'),
+    id: toNumberValue(category.id),
+  }
 }
 
-const mapProduct = (value: unknown): ProductEntity | null => {
+export const mapProduct = (value: unknown): ProductEntity | null => {
   const raw = toObject(value)
   const attributes = toObject(raw.attributes)
   const source = Object.keys(attributes).length > 0 ? attributes : raw
@@ -88,19 +91,64 @@ const mapProduct = (value: unknown): ProductEntity | null => {
     return null
   }
 
+  const categoryInfo = pickCategory(source)
+
   return {
     id,
     documentId,
     title: toStringValue(source.title, 'Untitled product'),
     description: toStringValue(source.description, 'No description'),
     price: toNumberValue(source.price),
-    category: pickCategory(source),
+    discountPercent: toNumberValue(source.discountPercent),
+    rating: toNumberValue(source.rating),
+    isInStock: toBooleanValue(source.isInStock, true),
+    category: categoryInfo.title,
+    categoryId: categoryInfo.id,
     imageUrl: pickImageUrl(source),
   }
 }
 
-export const getProducts = async (): Promise<ProductsListResult> => {
-  const response = await apiClient.get(`/products?${populateQuery}`)
+export type GetProductsParams = {
+  page?: number
+  pageSize?: number
+  search?: string
+  categoryId?: number
+  ids?: number[]
+}
+
+export const getProducts = async (
+  params: GetProductsParams = {},
+): Promise<ProductsListResult> => {
+  const { page = 1, pageSize = 9, search, categoryId, ids } = params
+
+  const queryParams: Record<string, unknown> = {
+    populate: ['images', 'productCategory'],
+    pagination: {
+      page,
+      pageSize,
+    },
+  }
+
+  const filters: Record<string, unknown> = {}
+
+  if (search) {
+    filters.title = { $containsi: search }
+  }
+
+  if (categoryId) {
+    filters.productCategory = { id: { $eq: categoryId } }
+  }
+
+  if (ids && ids.length > 0) {
+    filters.id = { $in: ids }
+  }
+
+  if (Object.keys(filters).length > 0) {
+    queryParams.filters = filters
+  }
+
+  const query = qs.stringify(queryParams, { encodeValuesOnly: true })
+  const response = await apiClient.get(`/products?${query}`)
 
   const responseData = toObject(response.data)
   const data = Array.isArray(responseData.data) ? responseData.data : []
@@ -118,7 +166,11 @@ export const getProducts = async (): Promise<ProductsListResult> => {
 export const getProductByDocumentId = async (
   documentId: string,
 ): Promise<ProductEntity | null> => {
-  const response = await apiClient.get(`/products/${documentId}?${populateQuery}`)
+  const query = qs.stringify(
+    { populate: ['images', 'productCategory'] },
+    { encodeValuesOnly: true },
+  )
+  const response = await apiClient.get(`/products/${documentId}?${query}`)
   const responseData = toObject(response.data)
 
   return mapProduct(responseData.data)
