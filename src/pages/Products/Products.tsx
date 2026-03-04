@@ -110,9 +110,9 @@ const Products = observer(() => {
     [productsStore.page, productsStore.totalPages],
   )
 
-  const isLoading = productsStore.meta === Meta.loading
-  const isError = productsStore.meta === Meta.error
-  const isInitial = productsStore.meta === Meta.initial
+  const isLoading = productsStore.isLoading
+  const isError = productsStore.isError
+  const isInitial = productsStore.isInitial
 
   return (
     <section className={styles.page}>
@@ -183,9 +183,9 @@ const Products = observer(() => {
           {productsStore.totalPages > 1 && (
             <ProductsPagination
               currentPage={productsStore.page}
-              onNext={() => productsStore.setPage(Math.min(productsStore.totalPages, productsStore.page + 1))}
+              onNext={productsStore.nextPage}
               onPageChange={(page) => productsStore.setPage(page)}
-              onPrevious={() => productsStore.setPage(Math.max(1, productsStore.page - 1))}
+              onPrevious={productsStore.previousPage}
               paginationItems={paginationItems}
               totalPages={productsStore.totalPages}
             />

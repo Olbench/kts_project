@@ -49,6 +49,9 @@ export default class ProductsStore implements ILocalStore {
       _totalProducts: observable,
       products: computed,
       meta: computed,
+      isLoading: computed,
+      isError: computed,
+      isInitial: computed,
       search: computed,
       selectedCategory: computed,
       page: computed,
@@ -57,6 +60,8 @@ export default class ProductsStore implements ILocalStore {
       setSearch: action.bound,
       setSelectedCategory: action.bound,
       setPage: action.bound,
+      nextPage: action.bound,
+      previousPage: action.bound,
       fetchProducts: action.bound,
     })
 
@@ -85,6 +90,18 @@ export default class ProductsStore implements ILocalStore {
 
   get meta(): Meta {
     return this._meta
+  }
+
+  get isLoading(): boolean {
+    return this._meta === Meta.loading
+  }
+
+  get isError(): boolean {
+    return this._meta === Meta.error
+  }
+
+  get isInitial(): boolean {
+    return this._meta === Meta.initial
   }
 
   get search(): string {
@@ -129,8 +146,22 @@ export default class ProductsStore implements ILocalStore {
   }
 
   setPage(page: number): void {
-    this._page = page
+    const nextPage = Math.max(1, Math.min(page, this.totalPages))
+
+    if (nextPage === this._page) {
+      return
+    }
+
+    this._page = nextPage
     this.fetchProducts()
+  }
+
+  nextPage(): void {
+    this.setPage(this._page + 1)
+  }
+
+  previousPage(): void {
+    this.setPage(this._page - 1)
   }
 
   async fetchProducts(): Promise<void> {

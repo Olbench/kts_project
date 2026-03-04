@@ -1,4 +1,6 @@
-import { createContext, useContext, useRef, type ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
+
+import { useLocalStore } from '@/utils/useLocalStore'
 
 import CartStore from './CartStore'
 
@@ -9,14 +11,10 @@ type CartStoreProviderProps = {
 }
 
 export const CartStoreProvider = ({ children }: CartStoreProviderProps) => {
-  const storeRef = useRef<CartStore | null>(null)
-
-  if (storeRef.current === null) {
-    storeRef.current = new CartStore()
-  }
+  const store = useLocalStore(() => new CartStore())
 
   return (
-    <CartStoreContext.Provider value={storeRef.current}>
+    <CartStoreContext.Provider value={store}>
       {children}
     </CartStoreContext.Provider>
   )

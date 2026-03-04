@@ -23,6 +23,7 @@ export default class SingleProductStore implements ILocalStore {
       _meta: observable,
       product: computed,
       meta: computed,
+      isLoading: computed,
       fetchProduct: action.bound,
     })
   }
@@ -33,6 +34,10 @@ export default class SingleProductStore implements ILocalStore {
 
   get meta(): Meta {
     return this._meta
+  }
+
+  get isLoading(): boolean {
+    return this._meta === Meta.loading || this._meta === Meta.initial
   }
 
   async fetchProduct(documentId: string): Promise<void> {
