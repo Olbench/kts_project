@@ -1,5 +1,5 @@
 import React from 'react';
-import MultiDropdown, { MultiDropdownProps, Option } from './MultiDropdown';
+import MultiDropdown, { type MultiDropdownProps, type Option } from './MultiDropdown';
 
 const OPTIONS = [
   { key: 'msk', value: 'Moscow' },

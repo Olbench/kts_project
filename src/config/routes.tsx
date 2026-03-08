@@ -2,6 +2,7 @@ import { Navigate, type RouteObject } from 'react-router-dom'
 
 import App from '@/App'
 import ErrorPage from '@/pages/ErrorPage'
+import CartPage from '@/pages/CartPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
 import ProductPage from '@/pages/ProductPage'
 import Products from '@/pages/Products'
@@ -34,7 +35,7 @@ export const routesConfig: RouteObject[] = [
       },
       {
         path: 'cart',
-        element: <PlaceholderPage title="Cart" />,
+        element: <CartPage />,
       },
       {
         path: 'user-profile',

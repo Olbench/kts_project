@@ -1,0 +1,231 @@
+@use '@/styles/tokens' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.2;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 0;
+}
+
+.emptyText {
+  color: $color-muted;
+  font-size: 18px;
+  margin: 0;
+}
+
+.shopLink {
+  color: $color-brand;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 12px;
+  border: 1px solid $color-border;
+}
+
+.itemImageLink {
+  display: block;
+  height: 100%;
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  object-fit: cover;
+  background: $color-image-fallback;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.itemMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.itemCount {
+  color: $color-muted;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.itemTitle {
+  color: $color-text;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
+  white-space: normal;
+  overflow: hidden;
+}
+
+.itemCategory {
+  color: $color-muted;
+  font-size: 13px;
+}
+
+.itemBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itemPrice {
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.removeButton {
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px;
+  flex-shrink: 0;
+  min-height: 32px;
+
+  &:hover {
+    color: #c0392b;
+  }
+}
+
+.quantityControl {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $color-border;
+}
+
+.quantityButton {
+  border: none;
+  background: $color-brand;
+  color: $color-surface;
+  width: 36px;
+  min-height: 36px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.quantityValue {
+  min-width: 44px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: $color-text;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid $color-border;
+  width: 100%;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 1px solid $color-border;
+}
+
+.clearButton {
+  border: none;
+  background: $color-muted;
+  color: $color-surface;
+  min-height: 44px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@include mq($bp-tablet) {
+  .content {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    align-items: start;
+  }
+
+  .summary {
+    position: sticky;
+    top: 96px;
+  }
+
+  .itemImage {
+    width: 100px;
+    min-height: 100px;
+  }
+
+  .item {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,89 @@
+@use '@/styles/tokens' as *;
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@mixin skeleton-block {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: $color-surface;
+  height: 100%;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  @include skeleton-block;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 14px;
+}
+
+.category {
+  height: 20px;
+  width: 80px;
+  @include skeleton-block;
+}
+
+.title {
+  height: 32px;
+  width: 85%;
+  @include skeleton-block;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.line {
+  height: 14px;
+  width: 100%;
+  @include skeleton-block;
+}
+
+.lineShort {
+  height: 14px;
+  width: 60%;
+  @include skeleton-block;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.price {
+  height: 22px;
+  width: 60px;
+  @include skeleton-block;
+}
+
+.button {
+  height: 44px;
+  width: 100px;
+  @include skeleton-block;
+}

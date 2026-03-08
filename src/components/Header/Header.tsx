@@ -1,15 +1,19 @@
+import { observer } from 'mobx-react-lite'
 import { Link, NavLink } from 'react-router-dom'
 
 import cartIcon from '@/assets/icons/icon_cart.svg'
 import logoIcon from '@/assets/icons/logo.svg'
 import userIcon from '@/assets/icons/icon_user.svg'
+import { useCartStore } from '@/store/CartStoreContext'
 
 import styles from './Header.module.scss'
 
 const getNavClassName = ({ isActive }: { isActive: boolean }): string =>
   `${styles.link} ${isActive ? styles.linkActive : ''}`
 
-const Header = () => {
+const Header = observer(() => {
+  const cartStore = useCartStore()
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -33,6 +37,9 @@ const Header = () => {
         <div className={styles.actions}>
           <Link aria-label="Cart" className={styles.iconLink} to="/cart">
             <img alt="Cart" className={styles.icon} src={cartIcon} />
+            {cartStore.count > 0 && (
+              <span className={styles.badge}>{cartStore.count}</span>
+            )}
           </Link>
           <Link aria-label="User profile" className={styles.iconLink} to="/user-profile">
             <img alt="User profile" className={styles.icon} src={userIcon} />
@@ -41,6 +48,6 @@ const Header = () => {
       </div>
     </header>
   )
-}
+})
 
 export default Header
